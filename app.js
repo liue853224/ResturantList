@@ -2,14 +2,22 @@
 const express = require("express");
 const app = express();
 const port = 3000;
-const { engine } = require("express-handlebars");
-const restaurants = require("./public/jsons/restaurant.json").results;
 
-// 設置
-app.use(express.static("public"));
+// 模板引擎
+const { engine } = require("express-handlebars");
 app.engine(".hbs", engine({ extname: ".hbs" }));
 app.set("view engine", ".hbs");
 app.set("views", "./views");
+
+// 餐廳資料來源
+const restaurants = require("./public/jsons/restaurant.json").results;
+
+// 資料庫相關設置
+const db = require("./models");
+const users = db.users;
+
+// 設置靜態資料來源
+app.use(express.static("public"));
 
 //route
 app.get("/", (req, res) => {
