@@ -16,6 +16,13 @@ const restaurants = require("./public/jsons/restaurant.json").results;
 const db = require("./models");
 const users = db.users;
 
+// 讓express取得網址中的資料
+app.use(express.urlencoded({ extended: true }));
+
+// 讓表單可以使用PUT Method功能
+const methodOverride = require("method-override");
+app.use(methodOverride("_method"));
+
 // 設置靜態資料來源
 app.use(express.static("public"));
 
@@ -43,6 +50,22 @@ app.get("/Restaurants/:id", (req, res) => {
   const id = Number(req.params.id);
   const restaurant = restaurants.find((restaurant) => restaurant.id === id);
   res.render("detail", { restaurant });
+});
+
+app.post("/Restaurants/new", (req, res) => {
+  res.render("new");
+});
+
+app.get("/Restaurants/edit", (req, res) => {
+  res.render("edit");
+});
+
+app.put("/Restaurants/:id", (req, res) => {
+  res.render(null);
+});
+
+app.delete("Restaurants/:id", (req, res) => {
+  res.render(null);
 });
 
 // Listen
