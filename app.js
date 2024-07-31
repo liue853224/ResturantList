@@ -3,9 +3,9 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const router = require("./routes/index");
+const { engine } = require("express-handlebars");
 
 // 模板引擎
-const { engine } = require("express-handlebars");
 app.engine(".hbs", engine({ extname: ".hbs" }));
 app.set("view engine", ".hbs");
 app.set("views", "./views");
