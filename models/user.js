@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  user.init(
+  User.init(
     {
       id: {
         type: DataTypes.INTEGER,

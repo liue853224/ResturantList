@@ -6,7 +6,12 @@ const router = require("./routes/index");
 const { engine } = require("express-handlebars");
 
 // 模板引擎
-app.engine(".hbs", engine({ extname: ".hbs" }));
+app.engine(
+  ".hbs",
+  engine({
+    extname: ".hbs",
+  })
+);
 app.set("view engine", ".hbs");
 app.set("views", "./views");
 

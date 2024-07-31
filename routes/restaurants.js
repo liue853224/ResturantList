@@ -1,27 +1,48 @@
 const express = require("express");
-const app = express();
 const router = express.Router();
+const db = require("../models");
+const Restaurant = db.Restaurant;
 
 router.get("/", (req, res) => {
-  //   const keyword = req.query.search?.trim();
-  //   const matchedRestaurant = keyword
-  //     ? restaurants.filter((restaurant) => {
-  //         return (
-  //           restaurant.name.toLowerCase().includes(keyword.toLowerCase()) ||
-  //           restaurant.category.includes(keyword)
-  //         );
-  //       })
-  //     : restaurants;
-  //   if (matchedRestaurant.length === 0) {
-  //     res.render("empty", { keyword });
-  //   } else res.render("index", { restaurants: matchedRestaurant, keyword });
-  res.render("index");
+  return Restaurant.findAll({
+    attributes: [
+      "id",
+      "name",
+      "name_en",
+      "category",
+      "image",
+      "location",
+      "phone",
+      "google_map",
+      "rating",
+      "description",
+    ],
+    raw: true,
+  }).then((restaurants) => {
+    res.render("index", { restaurants });
+  });
 });
 
 router.get("/:id", (req, res) => {
-  //   const id = Number(req.params.id);
-  //   const restaurant = restaurants.find((restaurant) => restaurant.id === id);
-  res.render("detail", { restaurant });
+  const id = req.params.id;
+
+  return Restaurant.findByPk(id, {
+    attributes: [
+      "id",
+      "name",
+      "name_en",
+      "category",
+      "image",
+      "location",
+      "phone",
+      "google_map",
+      "rating",
+      "description",
+    ],
+    raw: true,
+  }).then((restaurant) => {
+    res.render("detail", { restaurant });
+  });
 });
 
 router.post("/new", (req, res) => {
