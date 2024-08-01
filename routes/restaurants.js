@@ -23,6 +23,10 @@ router.get("/", (req, res) => {
   });
 });
 
+router.get("/new", (req, res) => {
+  return res.render("new");
+});
+
 router.get("/:id", (req, res) => {
   const id = req.params.id;
 
@@ -45,8 +49,36 @@ router.get("/:id", (req, res) => {
   });
 });
 
-router.post("/new", (req, res) => {
-  res.render("new");
+router.post("/", (req, res) => {
+  const {
+    name,
+    name_en,
+    category,
+    image,
+    location,
+    phone,
+    google_map,
+    rating,
+    description,
+  } = req.body;
+
+  return Restaurant.create({
+    name,
+    name_en,
+    category,
+    image,
+    location,
+    phone,
+    google_map,
+    rating,
+    description,
+  })
+    .then(() => {
+      res.redirect("/restaurants");
+    })
+    .catch((err) => {
+      console.error;
+    });
 });
 
 router.get("/edit", (req, res) => {

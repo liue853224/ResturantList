@@ -3,10 +3,10 @@ const express = require("express");
 const router = express.Router();
 
 // 引進路由
-const restaurant = require("./restaurants");
+const restaurants = require("./restaurants");
 
 // 使用路由
-router.use("/Restaurants", restaurant);
+router.use("/restaurants", restaurants);
 
 router.get("/", (req, res) => {
   res.redirect("/restaurants");
