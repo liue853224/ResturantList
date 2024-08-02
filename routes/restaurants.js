@@ -81,12 +81,72 @@ router.post("/", (req, res) => {
     });
 });
 
-router.get("/edit", (req, res) => {
-  res.render("edit");
+router.get("/:id/edit", (req, res) => {
+  const id = req.params.id;
+
+  return Restaurant.findByPk(id, {
+    attributes: [
+      "id",
+      "name",
+      "name_en",
+      "category",
+      "image",
+      "location",
+      "phone",
+      "google_map",
+      "rating",
+      "description",
+    ],
+    raw: true,
+  }).then((restaurant) => {
+    console.log(restaurant);
+    res.render("edit", { restaurant });
+  });
 });
 
 router.put("/:id", (req, res) => {
-  res.render(null);
+  const {
+    name,
+    name_en,
+    category,
+    image,
+    location,
+    phone,
+    google_map,
+    rating,
+    description,
+  } = req.body;
+  const id = req.params.id;
+  return Restaurant.findByPk(id, {
+    attributes: [
+      "id",
+      "name",
+      "name_en",
+      "category",
+      "image",
+      "location",
+      "phone",
+      "google_map",
+      "rating",
+      "description",
+    ],
+  }).then((restaurant) => {
+    return restaurant
+      .update({
+        name,
+        name_en,
+        category,
+        image,
+        location,
+        phone,
+        google_map,
+        rating,
+        description,
+      })
+      .then(() => {
+        return res.redirect(`/restaurants/${id}`);
+      });
+  });
 });
 
 router.delete("/:id", (req, res) => {
