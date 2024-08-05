@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require("../models");
 const Restaurant = db.Restaurant;
 
-router.get("/", (req, res) => {
+router.get("/", (req, res, next) => {
   return Restaurant.findAll({
     attributes: [
       "id",
@@ -44,12 +44,19 @@ router.get("/:id", (req, res) => {
       "description",
     ],
     raw: true,
-  }).then((restaurant) => {
-    res.render("detail", { restaurant });
-  });
+  })
+    .then((restaurant) => {
+      if (!restaurant) {
+        req.flash("error", "找不到相關資料");
+      }
+      res.render("detail", { restaurant });
+    })
+    .catch((error) => {
+      next(error);
+    });
 });
 
-router.post("/", (req, res) => {
+router.post("/", (req, res, next) => {
   const {
     name,
     name_en,
@@ -74,6 +81,7 @@ router.post("/", (req, res) => {
     description,
   })
     .then(() => {
+      req.flash("success", "新增成功!");
       res.redirect("/restaurants");
     })
     .catch((err) => {
