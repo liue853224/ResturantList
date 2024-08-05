@@ -150,7 +150,26 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  res.render(null);
+  const id = req.params.id;
+
+  return Restaurant.findByPk(id, {
+    attributes: [
+      "id",
+      "name",
+      "name_en",
+      "category",
+      "image",
+      "location",
+      "phone",
+      "google_map",
+      "rating",
+      "description",
+    ],
+  }).then((restaurant) => {
+    return restaurant.destroy().then(() => {
+      return res.redirect("/restaurants");
+    });
+  });
 });
 
 module.exports = router;
