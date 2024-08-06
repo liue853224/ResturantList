@@ -8,8 +8,10 @@ const flash = require("connect-flash");
 const session = require("express-session");
 const methodOverride = require("method-override");
 const flashMessageHandler = require("./middleware/flash-message");
+const errorHandler = require("./middleware/error-handle");
 
 // 加入環境變數
+console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
   console.log("env", process.env.SESSION_SECRET);
@@ -48,6 +50,9 @@ app.use(flashMessageHandler);
 
 //使用route
 app.use(router);
+
+// 使用error middleware
+app.use(errorHandler);
 
 // Listen
 app.listen(port, () => {

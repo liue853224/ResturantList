@@ -18,9 +18,14 @@ router.get("/", (req, res, next) => {
       "description",
     ],
     raw: true,
-  }).then((restaurants) => {
-    res.render("index", { restaurants });
-  });
+  })
+    .then((restaurants) => {
+      res.render("index", { restaurants });
+    })
+    .catch((error) => {
+      error.errorMessage = "找不到相關資料";
+      next(error);
+    });
 });
 
 router.get("/new", (req, res) => {
@@ -52,7 +57,9 @@ router.get("/:id", (req, res) => {
       res.render("detail", { restaurant });
     })
     .catch((error) => {
-      next(error);
+      console.log(error);
+      req.flash("error", "資料取得失敗");
+      return res.redirect("back");
     });
 });
 
@@ -84,8 +91,9 @@ router.post("/", (req, res, next) => {
       req.flash("success", "新增成功!");
       res.redirect("/restaurants");
     })
-    .catch((err) => {
-      console.error;
+    .catch((error) => {
+      error.errorMessage = "新增失敗";
+      next(error);
     });
 });
 
@@ -106,10 +114,15 @@ router.get("/:id/edit", (req, res) => {
       "description",
     ],
     raw: true,
-  }).then((restaurant) => {
-    console.log(restaurant);
-    res.render("edit", { restaurant });
-  });
+  })
+    .then((restaurant) => {
+      console.log(restaurant);
+      res.render("edit", { restaurant });
+    })
+    .catch((error) => {
+      req.flash("error", "取得資料失敗");
+      return res.redirect("back");
+    });
 });
 
 router.put("/:id", (req, res) => {
@@ -152,7 +165,12 @@ router.put("/:id", (req, res) => {
         description,
       })
       .then(() => {
+        req.flash("success", "修改成功");
         return res.redirect(`/restaurants/${id}`);
+      })
+      .catch((error) => {
+        req.flash("error", "更新失敗");
+        return res.redirect("back");
       });
   });
 });
@@ -174,6 +192,11 @@ router.delete("/:id", (req, res) => {
       "description",
     ],
   }).then((restaurant) => {
+    if (!restaurant) {
+      req.flash("error", 找不到資料);
+      return res.redirect("back");
+    }
+
     return restaurant.destroy().then(() => {
       return res.redirect("/restaurants");
     });
