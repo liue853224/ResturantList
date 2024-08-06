@@ -80,4 +80,7 @@
       </div>
     </div>
   </div>
+  <form action="/restaurants" method="GET" style="display: inline;"><input type="hidden" name="page" value="{{prev}}"><button type="submit">←</button></form>
+  <span>page: {{page}}</span>
+  <form action="/restaurants" method="GET" style="display: inline;"><input type="hidden" name="page" value="{{next}}"><button type="submit">→</button></form>
 </div>

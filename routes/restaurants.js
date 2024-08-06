@@ -4,6 +4,10 @@ const db = require("../models");
 const Restaurant = db.Restaurant;
 
 router.get("/", (req, res, next) => {
+  console.log(req.session);
+  const page = parseInt(req.query.page) || 1;
+  const limit = 6;
+
   return Restaurant.findAll({
     attributes: [
       "id",
@@ -20,7 +24,12 @@ router.get("/", (req, res, next) => {
     raw: true,
   })
     .then((restaurants) => {
-      res.render("index", { restaurants });
+      res.render("index", {
+        restaurants: restaurants.slice((page - 1) * limit, page * limit),
+        prev: page > 1 ? page - 1 : page,
+        next: page + 1,
+        page: page,
+      });
     })
     .catch((error) => {
       error.errorMessage = "找不到相關資料";
@@ -191,16 +200,21 @@ router.delete("/:id", (req, res) => {
       "rating",
       "description",
     ],
-  }).then((restaurant) => {
-    if (!restaurant) {
-      req.flash("error", 找不到資料);
-      return res.redirect("back");
-    }
+  })
+    .then((restaurant) => {
+      if (!restaurant) {
+        req.flash("error", 找不到資料);
+        return res.redirect("back");
+      }
 
-    return restaurant.destroy().then(() => {
-      return res.redirect("/restaurants");
+      return restaurant.destroy().then(() => {
+        return res.redirect("/restaurants");
+      });
+    })
+    .catch((error) => {
+      req.flash("error", "刪除失敗");
+      return res.redirect("back");
     });
-  });
 });
 
 module.exports = router;
