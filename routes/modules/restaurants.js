@@ -1,12 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../../models");
+const { where } = require("sequelize");
 const Restaurant = db.Restaurant;
 
 router.get("/", (req, res, next) => {
   console.log(req.session);
   const page = parseInt(req.query.page) || 1;
   const limit = 6;
+  const userId = req.user.id;
 
   return Restaurant.findAll({
     attributes: [
@@ -21,6 +23,9 @@ router.get("/", (req, res, next) => {
       "rating",
       "description",
     ],
+    where: {
+      userId,
+    },
     raw: true,
   })
     .then((restaurants) => {
@@ -43,6 +48,7 @@ router.get("/new", (req, res) => {
 
 router.get("/:id", (req, res) => {
   const id = req.params.id;
+  const userId = req.user.id;
 
   return Restaurant.findByPk(id, {
     attributes: [
@@ -56,12 +62,18 @@ router.get("/:id", (req, res) => {
       "google_map",
       "rating",
       "description",
+      "userId",
     ],
     raw: true,
   })
     .then((restaurant) => {
+      if (restaurant.userId !== userId) {
+        req.flash("error", "沒有權限操作");
+        return res.redirect("back");
+      }
       if (!restaurant) {
         req.flash("error", "找不到相關資料");
+        return res.redirect("back");
       }
       res.render("detail", { restaurant });
     })
@@ -84,6 +96,7 @@ router.post("/", (req, res, next) => {
     rating,
     description,
   } = req.body;
+  const userId = req.user.id;
 
   return Restaurant.create({
     name,
@@ -95,6 +108,7 @@ router.post("/", (req, res, next) => {
     google_map,
     rating,
     description,
+    userId,
   })
     .then(() => {
       req.flash("success", "新增成功!");
@@ -134,7 +148,7 @@ router.get("/:id/edit", (req, res) => {
     });
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", (req, res, next) => {
   const {
     name,
     name_en,
@@ -147,6 +161,8 @@ router.put("/:id", (req, res) => {
     description,
   } = req.body;
   const id = req.params.id;
+  const userId = req.user;
+
   return Restaurant.findByPk(id, {
     attributes: [
       "id",
@@ -159,8 +175,17 @@ router.put("/:id", (req, res) => {
       "google_map",
       "rating",
       "description",
+      "userId",
     ],
   }).then((restaurant) => {
+    if (restaurant.userId !== userId) {
+      req.flash("error", "沒有權限操作");
+      return res.redirect("back");
+    }
+    if (!restaurant) {
+      req.flash("error", "找不到相關資料");
+      return res.redirect("back");
+    }
     return restaurant
       .update({
         name,
@@ -178,8 +203,8 @@ router.put("/:id", (req, res) => {
         return res.redirect(`/restaurants/${id}`);
       })
       .catch((error) => {
-        req.flash("error", "更新失敗");
-        return res.redirect("back");
+        error.errorMessage = "更新失敗";
+        next(error);
       });
   });
 });
