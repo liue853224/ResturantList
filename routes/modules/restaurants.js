@@ -209,8 +209,9 @@ router.put("/:id", (req, res, next) => {
   });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", (req, res, next) => {
   const id = req.params.id;
+  const userId = req.user.id;
 
   return Restaurant.findByPk(id, {
     attributes: [
@@ -224,11 +225,16 @@ router.delete("/:id", (req, res) => {
       "google_map",
       "rating",
       "description",
+      "userId",
     ],
   })
     .then((restaurant) => {
       if (!restaurant) {
         req.flash("error", 找不到資料);
+        return res.redirect("back");
+      }
+      if (restaurant.userId !== userId) {
+        req.flash("error", "沒有權限操作");
         return res.redirect("back");
       }
 
@@ -237,8 +243,8 @@ router.delete("/:id", (req, res) => {
       });
     })
     .catch((error) => {
-      req.flash("error", "刪除失敗");
-      return res.redirect("back");
+      error.errorMessage = "操作失敗";
+      next(error);
     });
 });
 

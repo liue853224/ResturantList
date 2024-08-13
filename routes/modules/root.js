@@ -24,8 +24,13 @@ router.get("/register", (req, res) => {
   res.render("register");
 });
 
-router.get("/logout", (req, res) => {
-  res.send("logout user");
+router.post("/logout", (req, res) => {
+  req.logout((error) => {
+    if (error) {
+      next(error);
+    }
+    return res.redirect("/login");
+  });
 });
 
 module.exports = router;
