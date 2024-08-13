@@ -1,7 +1,7 @@
 <div class="container row col-md-8  mx-auto mt-3 mb-5 shadow p-3 mb-5 bg-body rounded">
 <h2>Login</h2>
 {{> message}}
-<form action="/users/login" method="POST">
+<form action="/login" method="POST">
     <div class="col-4">
         <div>
             <label for="email">Email</label>
@@ -18,7 +18,7 @@
 </form>
 <div class=" col mb-3">
     <span>No account?</span>
-    <a href="/users/register">Register</a>
+    <a href="/register">Register</a>
     <form action="/login/facebook" method="GET">
     <button class="btn btn-outline-primary"type="submit">Facebook Login</button>
 </form>
