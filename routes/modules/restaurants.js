@@ -1,11 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../../models");
-const { where } = require("sequelize");
 const Restaurant = db.Restaurant;
 
 router.get("/", (req, res, next) => {
-  console.log(req.session);
+  console.log(JSON.stringify(req.session, null, 2));
   const page = parseInt(req.query.page) || 1;
   const limit = 6;
   const userId = req.user.id;
