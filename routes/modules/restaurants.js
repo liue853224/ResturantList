@@ -4,7 +4,7 @@ const db = require("../../models");
 const Restaurant = db.Restaurant;
 
 router.get("/", (req, res, next) => {
-  console.log(JSON.stringify(req.session, null, 2));
+  console.log("session資料:" + JSON.stringify(req.session, null, 2));
   const page = parseInt(req.query.page) || 1;
   const limit = 6;
   const userId = req.user.id;

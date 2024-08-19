@@ -47,6 +47,7 @@ passport.use(
       // console.log("profile:" + JSON.stringify(profile, null, 2));
       const email = profile.emails[0].value;
       const name = profile.displayName;
+      console.log("name:" + name);
 
       return User.findOne({
         attributes: ["id", "name", "email"],
@@ -62,10 +63,15 @@ passport.use(
             return bcrypt
               .hash(randomPwd, 10)
               .then((hash) => {
-                User.create({ email, name, password: hash });
+                return User.create({ email, name: name, password: hash });
               })
-              .then((user) => {
-                done(null, { id: user.id, name: user.name, email: user.email });
+              .then((newUser) => {
+                console.log("newUser:" + newUser);
+                done(null, {
+                  id: newUser.id,
+                  name: newUser.name,
+                  email: newUser.email,
+                });
               });
           }
         })
@@ -83,7 +89,13 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((user, done) => {
-  done(null, { id: user.id });
+  User.findByPk(user.id)
+    .then((user) => {
+      done(null, { id: user.id, name: user.name, email: user.email });
+    })
+    .catch((error) => {
+      done(error, null);
+    });
 });
 
 module.exports = passport;

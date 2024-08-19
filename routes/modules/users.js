@@ -7,7 +7,7 @@ const db = require("../../models");
 const User = db.User;
 
 router.post("/", (req, res) => {
-  const { email, password } = req.body;
+  const { name, email, password } = req.body;
 
   return User.count({ where: { email } }).then((rowCount) => {
     if (rowCount > 0) {
@@ -16,7 +16,7 @@ router.post("/", (req, res) => {
     }
     return bcrypt.hash(password, 10).then((hash) => {
       console.log(hash);
-      return User.create({ email, password: hash }).then((user) => {
+      return User.create({ name, email, password: hash }).then((user) => {
         if (!user) {
           return res.redirect("back");
         }
