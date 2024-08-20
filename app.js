@@ -9,14 +9,15 @@ const session = require("express-session");
 const methodOverride = require("method-override");
 const flashMessageHandler = require("./middleware/flash-message");
 const errorHandler = require("./middleware/error-handle");
-const passport = require("passport");
-require("./config/passport");
+
 // 加入環境變數
 console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
   console.log("env", process.env.SESSION_SECRET);
 }
+const passport = require("./config/passport");
+
 // 模板引擎
 app.engine(
   ".hbs",
